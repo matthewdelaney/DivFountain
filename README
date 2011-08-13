@@ -1,0 +1,1 @@
+DivFountain is an investigation into the feasibility of particle-effects in JavaScript given recent advances in JavaScript engine technology. It is currently intended to avoid HTML5 and just deal with the DOM to visualize things.
