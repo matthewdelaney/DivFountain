@@ -23,9 +23,9 @@
  */
 function Particle(xv, yv, p)
 {
-	this.xVel = xv;
-	this.yVel = yv;
-	this.pressure = p;
+	this.xVel = xv; // Velocity in horizontal direction
+	this.yVel = yv; // Velocity in vertical direction
+	this.pressure = p; // Pressure within this Particle
 
 	this.getXVel = function() {
 		return this.xVel;

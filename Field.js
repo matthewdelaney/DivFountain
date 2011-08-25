@@ -48,10 +48,12 @@ function Field(fSX, fSY, fL, fR, sW, sH, nSX, nSY)
 	squareHeight = sH;
 	numSquaresX = nSX;
 	numSquaresY = nSY;
-	horizDivisor = numSquaresX/fieldSizeX;
-	verticDivisor = numSquaresY/fieldSizeY;
+	horizDivisor = numSquaresX/fieldSizeX; // How many physical field cells are there per displayed square horizontally?
+	verticDivisor = numSquaresY/fieldSizeY; // How many physical field cells are there per displayed square vertically?
 
-	// Create divs
+	// Create div-tags
+	// Background color and any other attributes are dealt with by external CSS to give the user of this class
+	// some control
 	divs = new Array();
 	for(var i=0; i<numSquaresX; i++)
 	{
@@ -62,6 +64,8 @@ function Field(fSX, fSY, fL, fR, sW, sH, nSX, nSY)
 			divs[i][j].setAttribute('class', 'square');
 			divs[i][j].setAttribute('className', 'square'); // IE uses className instead of class
 			//divs[i][j].setAttribute('onmouseover', 'squareMouseOver('+i+','+j+');');
+			
+			// Each div will make a call to squareMouseOver with its own coordinates (in the divs array) as parameters
 			var temp="squareMouseOver("+i+","+j+");";
 			divs[i][j].onmouseover = new Function(temp);
 			divs[i][j].style.left = i*squareWidth+fieldLeft + "px";
@@ -70,6 +74,7 @@ function Field(fSX, fSY, fL, fR, sW, sH, nSX, nSY)
 		}
 	}
 
+	// Initialise physical field and tempField (for working calculations)
 	field = new Array();
 	tempField = new Array();
 	for(var k=0; k<fieldSizeX; k++)
@@ -78,6 +83,7 @@ function Field(fSX, fSY, fL, fR, sW, sH, nSX, nSY)
 		tempField[k] = new Array();
 	}
 
+	// Populate physical field and tempField
 	for(var i=0; i<fieldSizeX; i++)
 	{
 		for(var j=0; j<fieldSizeY; j++)
@@ -86,7 +92,7 @@ function Field(fSX, fSY, fL, fR, sW, sH, nSX, nSY)
 			tempField[i][j] = new Particle(0, 0, 0);
 		}
 	}
-	finished = true;
+	finished = true; // Use to ensure synchronicity (see moveDivs())
 	self.setInterval(moveDivs, 10);
 
 	this.squareMouseOver = function(i,j) {
@@ -100,6 +106,8 @@ function Field(fSX, fSY, fL, fR, sW, sH, nSX, nSY)
 		field[fx][fy].setPressure(500);
 	}
 
+	// Process each cell in the physical field in order to update velocities and pressure based upon
+	// those of its neighbours
 	function update()
 	{
 		for(var i=1; i<fieldSizeX-1; i++)
@@ -140,7 +148,8 @@ function Field(fSX, fSY, fL, fR, sW, sH, nSX, nSY)
 		var tx = 0;
 		var ty = 0;
 
-		// This function should be synchronous
+		// This function should be synchronous - this isn't always the case with browsers
+		// so we'll endeavour to ensure it here
 		if (finished) {
 			finished = false;
 			update();
@@ -164,6 +173,8 @@ function Field(fSX, fSY, fL, fR, sW, sH, nSX, nSY)
 	}
 }
 
+// Routes squareMouseOver call back into the Field object
+// Might benefit from application of Visitor pattern
 function squareMouseOver(i,j) {
 	field.squareMouseOver(i,j);
 }
